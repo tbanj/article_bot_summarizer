@@ -8,8 +8,17 @@ const Demo = () => {
     url: "",
     summary: "",
   });
+  const [allArticles, setAllArticles] = useState([]);
 
   const [getSummary, { error, isFetching }] = useLazyGetSummaryQuery();
+
+  useEffect(() => {
+    const articlesFromLocalStorage = JSON.parse(
+      localStorage.getItem("articles")
+    );
+
+    if (articlesFromLocalStorage) setAllArticles(articlesFromLocalStorage);
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -19,7 +28,13 @@ const Demo = () => {
     if (data?.summary) {
       const newArticle = { ...article, summary: data.summary };
 
+      const updatedAllArticles = [newArticle, ...allArticles];
       setArticle(newArticle);
+      setAllArticles(updatedAllArticles);
+
+      /* u need to stringify when storing data to localstorage cos localstorage can
+      only store strings */
+      localStorage.setItem("articles", JSON.stringify(updatedAllArticles));
       console.warn("newArticle", newArticle);
     }
   };
